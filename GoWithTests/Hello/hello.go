@@ -101,3 +101,4 @@ func (d Dictionary) Search2(word string)(string,error){
 func (d Dictionary) Add(word , definition string){
 	d[word] = definition
 }
+
