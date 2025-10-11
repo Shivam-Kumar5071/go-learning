@@ -3,6 +3,7 @@ package gowithtests
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
+	"bytes"
 	
 )
 
@@ -145,8 +146,103 @@ func Test_WordAdd(t *testing.T){
 	}
 
 	assert.Equal(t,want,got,"Add function in dictionary is working fine")
+}
+
+func Test_WordDict(t *testing.T){
+	mp1 := map[string]string{"test1" : "this is test1"}
+	var word string = "test1"
+	got := WordFind(mp1,word)
+	want := "this is test1"
+
+	if got != want{
+		t.Errorf("got %s want %s ",got,want)
+	}
+}
+
+func Test_Greet(t *testing.T){
+	buffer := bytes.Buffer{}
+	name := "Chris"
+	Greet(&buffer,name)
+	got := buffer.String()
+	want := "Hello, Chris"
+
+	assert.Equal(t,got,want,"Dependency Injection")
 
 }
+
+func Test_Countdown(t *testing.T){
+	got := Countdown()
+	want := `3
+2
+1
+go !`
+		
+	assert.Equal(t,got,want,"Countdown test passed")
+
+}
+
+func Test_Countdown2(t *testing.T){
+	buffer := &bytes.Buffer{}
+	spySleeper := &SpySleeper{}
+
+	Countdown2(buffer,spySleeper)
+
+	got := buffer.String()
+
+	want := `3
+2
+1
+go !`
+
+	assert.Equal(t,want,got)
+
+	if spySleeper.Calls != 3 {
+		t.Errorf("expected 3 but got %d", spySleeper.Calls)
+	}
+}
+
+func mockWebsiteHelper(url string) bool{
+	return url != "www.happy.com"
+}
+
+func Test_WebsiteCheck(t *testing.T){
+	websites := []string{
+		"www.google.com",
+		"www.gmail.com",
+		"www.razorpay.com",
+		"www.moneycontrol.com",
+	}
+
+	want := map[string]bool{
+		"www.google.com": true,
+		"www.gmail.com": true,
+		"www.razorpay.com":true,
+		"www.moneycontrol.com":true,
+	}
+
+	got := CheckWebsites(mockWebsiteHelper,websites)
+
+	assert.Equal(t,got,want,"These mocked are equal")
+}
+
+func Test_URL(t *testing.T){
+	slowUrl := "www.facebook.com"
+	fastUrl := "www.quii.dev"
+
+	want := fastUrl
+	got := Racer(slowUrl,fastUrl)
+
+	// assert.Equal(t,want,got,"good")
+
+	if got != want{
+		t.Errorf("got %s and want %s",got,want)
+	}
+
+}
+
+
+
+
 
 
 

@@ -1,5 +1,14 @@
 package gowithtests
 
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"net/http"
+	"strconv"
+	"time"
+)
+
 
 func repeat(char string) string{
 
@@ -102,3 +111,74 @@ func (d Dictionary) Add(word , definition string){
 	d[word] = definition
 }
 
+func Greet(writer *bytes.Buffer,name string){
+	fmt.Fprintf(writer, "Hello, %s", name)
+}
+
+
+func Countdown()string{
+	var num int = 3
+	var str string
+	for i:=num;i>=0;i--{
+		if i==0{
+			str += "go !"
+		}else{
+			str += strconv.Itoa(i)+ "\n"
+		}
+		
+	}
+	return str
+}
+
+const countDown = 3
+const finalWord = "go !"
+
+
+type Sleeper interface{
+	Sleep()
+}
+
+type SpySleeper struct{
+	Calls int
+}
+
+func (s *SpySleeper) Sleep(){
+	s.Calls++
+}
+
+func Countdown2(out io.Writer, sleeper Sleeper) {
+	for i := countDown; i > 0; i-- {
+		sleeper.Sleep()
+	}
+
+	for i := countDown; i > 0; i-- {
+		fmt.Fprintln(out, i)
+	}
+
+	fmt.Fprint(out, finalWord)
+}
+
+type WebsiteChecker func(string) bool
+
+func CheckWebsites(wc WebsiteChecker , urls []string) map[string]bool {
+	res := make(map[string]bool)
+	for _, url := range urls{
+		res[url] = wc(url)
+	}
+	return res
+}
+
+func Racer(a,b string) (winner string){
+	startA := time.Now()
+	http.Get(a)
+	aDuration := time.Since(startA)
+
+	startB := time.Now()
+	http.Get(b)
+	bDuration := time.Since(startB)
+
+	if aDuration < bDuration{
+		return a
+	}
+	return b
+}
