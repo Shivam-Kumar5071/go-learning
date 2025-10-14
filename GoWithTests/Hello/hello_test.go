@@ -1,10 +1,12 @@
 package gowithtests
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"bytes"
-	
+	"sync"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_HelloPass(t *testing.T) {
@@ -238,6 +240,106 @@ func Test_URL(t *testing.T){
 		t.Errorf("got %s and want %s",got,want)
 	}
 
+}
+
+func Test_Racer(t *testing.T){
+	t.Run("Testing something",func(t *testing.T){
+		// making slow and fast server
+		slowServer := makeDelayedServer(20 * time.Millisecond)
+		fastServer := makeDelayedServer(0 * time.Millisecond)
+
+		//closing the server at the end
+		defer slowServer.Close()
+		defer fastServer.Close()
+
+		//now making the URL of the server for comparison
+		slowURL := slowServer.URL
+		fastURL := fastServer.URL
+
+		want := fastURL
+		got,_ := Racer2(slowURL,fastURL)
+
+		assert.Equal(t,want,got,"Testing is done for the ends")
+
+	})
+
+	t.Run("Expecting an error ", func(t *testing.T) {
+		slowServer := makeDelayedServer(11 * time.Millisecond)
+		fastServer := makeDelayedServer(10 * time.Millisecond)
+
+		defer slowServer.Close()
+		defer fastServer.Close()
+
+		slowURL := slowServer.URL
+		fastURL := fastServer.URL
+
+		_ , err := Racer2(slowURL,fastURL)
+
+		if err != nil{
+			t.Errorf("Expected an error but did not get any error")
+		}
+	})
+}
+
+
+func TestWalker(t *testing.T){
+	want := "Chris"
+	var got []string
+
+	x := struct{
+		Name string
+	}{want}
+
+	walk(x , func(input string){
+		got = append(got,input)
+	})
+
+	if len(got) != 1{
+		t.Errorf("wrong number of function calls as we want %d and got %d" , 1,len(got))
+	}
+
+	if got[0] != want{
+		t.Errorf("got %s and want %s",got,want)
+	}
+
+}
+
+func TestCounter(t *testing.T){
+	t.Run("Checking the logic of counter",func(t* testing.T){
+		counter := Counter{}
+		counter.Inc()
+		counter.Inc()
+		counter.Inc()
+		finalValue := counter.getValue()
+		if finalValue != 3{
+			t.Errorf("got %d but wanted %d",finalValue,3)
+		}
+	})
+
+	t.Run("it checks for concurrency ",func(t *testing.T){
+		count := 1000
+		counter2 := Counter2{}
+
+		var wg sync.WaitGroup
+		wg.Add(count)
+
+		for i := 0;i<count;i++{
+			go func(){
+				counter2.Inc2()
+				wg.Done()
+			}()
+		}
+		wg.Wait()
+		assertCounter(t,&counter2,count)
+
+	})
+}
+
+func assertCounter(t *testing.T,got *Counter2 ,want int){
+	t.Helper()
+	if got.val != want{
+		t.Errorf("got %d and want %d",got,want)
+	}
 }
 
 

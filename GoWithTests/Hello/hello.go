@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptest"
+	"reflect"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -181,4 +184,62 @@ func Racer(a,b string) (winner string){
 		return a
 	}
 	return b
+}
+
+func Racer2(a,b string) (winner string,err error){
+	select{
+	case <-ping(a):
+		return a,nil
+	case <-ping(b):
+		return b,nil
+	case <-time.After(10 * time.Second):
+		return "",fmt.Errorf("waiting for %s and %s",a,b)
+	}
+}
+
+func ping(a string) chan struct{}{
+	ch := make(chan struct{})
+	go func ()  {
+		http.Get(a)
+		close(ch)
+	}()
+	return ch
+}
+
+func makeDelayedServer(delay time.Duration) *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(delay)
+		w.WriteHeader(http.StatusOK)
+	}))
+}
+
+
+func walk(x interface{}, fn func(input string)) {
+	val := reflect.ValueOf(x)
+	field := val.Field(0)
+	fn(field.String())
+}
+
+type Counter struct{
+	val int
+}
+
+func(c *Counter) Inc(){
+	c.val++
+}
+
+func (c *Counter) getValue() int{
+	return c.val
+}
+
+type Counter2 struct{
+	sync.Mutex
+	val int
+}
+
+func(c *Counter2) Inc2(){
+	c.Lock()
+	defer c.Unlock()
+	c.val++
+
 }
