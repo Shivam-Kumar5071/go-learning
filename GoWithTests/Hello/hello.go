@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -242,4 +243,52 @@ func(c *Counter2) Inc2(){
 	defer c.Unlock()
 	c.val++
 
+}
+type RomanNumber struct{
+	value int
+	romanVal string
+}
+
+var AllRomanVal = []RomanNumber{
+	{10,"X"},
+	{9,"IX"},
+	{5,"V"},
+	{4,"IV"},
+	{1,"I"},
+}
+
+func ConvertToRoman(num int) string{
+	var result strings.Builder
+
+	for _,numeralVal := range AllRomanVal{
+		for num >= numeralVal.value{
+			result.WriteString(numeralVal.romanVal)
+			num -= numeralVal.value
+		}
+	}
+	return result.String()
+}
+
+var AllRomanVal2 = []RomanNumber{
+	{100,"C"},
+	{90,"XC"},
+	{50,"L"},
+	{40,"XL"},
+	{10,"X"},
+	{9,"IX"},
+	{5,"V"},
+	{4,"IV"},
+	{1,"I"},
+}
+
+func convertRomanToArabic(rom string)int{
+
+	var result = 0
+	for _,roman := range AllRomanVal2{
+		for strings.HasPrefix(rom,roman.romanVal){
+			result += roman.value
+			rom = strings.TrimPrefix(rom,roman.romanVal)
+		}
+	}
+	return result
 }

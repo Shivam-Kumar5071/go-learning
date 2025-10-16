@@ -342,6 +342,61 @@ func assertCounter(t *testing.T,got *Counter2 ,want int){
 	}
 }
 
+func Test_IntToRoman(t *testing.T){
+
+	t.Run("1 is converted to I", func(t *testing.T){
+		got := ConvertToRoman(1)
+		want := "I"
+		if got != want{
+			t.Errorf("got %s and want %s",got ,want)
+		}
+	})
+
+	t.Run("2 is converted to II",func(t *testing.T){
+		got := ConvertToRoman(2)
+		want := "II"
+		if got != want {
+			t.Errorf("Got %s and want %s",got,want)
+		}
+	})	
+
+	t.Run("25 is coverted XV",func(t *testing.T){
+		got := ConvertToRoman(25)
+		want := "XXV"
+
+		assert.Equal(t,got,want,"so conversion is good ")
+	})
+
+	t.Run("37 is coverted to XXXVII",func(t *testing.T){
+		got := ConvertToRoman(37)
+		want := "XXXVII"
+		assert.Equal(t,got,want,"so, this conversion is good")
+	})
+
+}
+
+func Test_RomanToInt(t *testing.T){
+	t.Run("IV is converted to 4",func(t *testing.T){
+		got := convertRomanToArabic("IV")
+		want := 4
+		assert.Equal(t,got,want)
+	})
+
+	t.Run("Converting 77 to LXXVII",func(t *testing.T){
+		got := convertRomanToArabic("LXXVII")
+		want := 77
+		assert.Equal(t,got,want)
+	})
+}
+
+func Test_Functions(t *testing.T){
+	roman := ConvertToRoman(21)
+	arabic := convertRomanToArabic(roman)
+	check := 21
+	assert.Equal(t,roman,"XXI")
+	assert.Equal(t,arabic,check)
+}
+
 
 
 
