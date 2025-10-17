@@ -398,6 +398,61 @@ func Test_Functions(t *testing.T){
 }
 
 
+//In this interface helps us to make an easier approach where we can pass any type of data whether it is string , int , bool , etc. -> Generics
+func Test_Generics(t *testing.T){
+	assertEqual(t,"Hello","Hello")
+	assertNotEqual(t,false,2)
+}
+
+func assertNotEqual(t *testing.T,want , got interface{}){
+	t.Helper()
+	if got == want{
+		t.Errorf("want %v but got %v",want,got)
+	}
+}
+
+func assertEqual(t *testing.T , want , got interface{}){
+	t.Helper()
+	if got != want{
+		t.Errorf("want %v but got %v",want,got)
+	}
+}
+
+
+func assertTrue(t *testing.T , got bool){
+	t.Helper()
+	if !got{
+		t.Errorf("got %t ",got)
+	}
+}
+
+func assertFalse(t *testing.T , got bool){
+	t.Helper()
+	if got{
+		t.Errorf("got %t",got)
+	}
+}
+
+func Test_StackInt(t *testing.T){
+
+	stackofInt := new(StackOfInts)
+	assertTrue(t,stackofInt.IsEmpty())
+
+	stackofInt.push(420)
+	assertFalse(t,stackofInt.IsEmpty())
+
+	// stackofInt.push(210)
+	// stackofInt.push(120)
+	stackofInt.pop()
+	// stackofInt.push(420)
+	assertTrue(t,stackofInt.IsEmpty())
+
+
+}
+
+
+
+
 
 
 

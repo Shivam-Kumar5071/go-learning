@@ -292,3 +292,26 @@ func convertRomanToArabic(rom string)int{
 	}
 	return result
 }
+
+type StackOfInts struct{
+	stack []int
+}
+
+func (s *StackOfInts) push(val int){
+	s.stack = append(s.stack, val)
+}
+
+func (s *StackOfInts) IsEmpty()bool{
+	return len(s.stack) == 0
+}
+
+func (s *StackOfInts) pop() (int , bool){
+	if s.IsEmpty(){
+		return 0,false
+	}
+
+	index := len(s.stack) - 1
+	lastItem := s.stack[index]
+	s.stack = s.stack[:index]
+	return lastItem,true
+}
